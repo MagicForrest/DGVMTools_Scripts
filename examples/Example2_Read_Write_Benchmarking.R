@@ -4,7 +4,7 @@ library(DGVMTools)
 
 ##### Define the ModelRun
 run <- defineSource(  name = "Example Run",
-                      dir = "/home/forrest/Workshops/2019-03-13_Lund/LPJ-GUESS",
+                      dir = "/home/forrest/LPJ-GUESS_Global_Run",
                       format = "LPJ-GUESS")
 
 

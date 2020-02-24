@@ -3,7 +3,7 @@ library(DGVMTools)
 ### DEFINE A SOURCE
 
 GUESS.run <- defineSource(id = "LPJ-GUESS_Example",
-                          dir = "/home/forrest/Workshops/2019-03-13_Lund/LPJ-GUESS",
+                          dir = "/home/forrest/LPJ-GUESS_Global_Run",
                           format = GUESS,
                           name = "LPJ-GUESS Example Run")
 

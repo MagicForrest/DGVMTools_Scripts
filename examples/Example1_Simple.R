@@ -4,9 +4,9 @@ library(raster)
 
 
 ##### STEP 1 - Define the ModelRun
-run <- defineSource(  name = "Example Run",
-                      dir = "/home/forrest/Workshops/2019-03-13_Lund/LPJ-GUESS",
-                      format = "LPJ-GUESS")
+run <- defineSource(name = "Example Run",
+                    dir = "/home/forrest/LPJ-GUESS_Global_Run",
+                    format = GUESS)
 
 
 ##### STEP 2 - Get the model object - note yearly averaging is also being done
