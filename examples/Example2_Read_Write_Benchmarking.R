@@ -4,8 +4,8 @@ library(DGVMTools)
 
 ##### Define the ModelRun
 run <- defineSource(  name = "Example Run",
-                      dir = "/home/forrest/LPJ-GUESS_Global_Run",
-                      format = "LPJ-GUESS")
+                      dir = "/home/forrest/GuessRuns/Global_Run",
+                      format = GUESS)
 
 
 ##### Benchmark first reading of the full file

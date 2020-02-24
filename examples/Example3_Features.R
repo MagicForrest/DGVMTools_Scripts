@@ -3,7 +3,7 @@ library(DGVMTools)
 ### DEFINE A SOURCE
 
 GUESS.run <- defineSource(id = "LPJ-GUESS_Example",
-                          dir = "/home/forrest/LPJ-GUESS_Global_Run",
+                          dir = "/home/forrest/GuessRuns/Global_Run",
                           format = GUESS,
                           name = "LPJ-GUESS Example Run")
 
@@ -46,7 +46,7 @@ rm(LAI.full)
 
 ### BIOME CLASSIFICATION
 
-Global.biomes <- getBiomes(GUESS.run, 
+Global.biomes <- getClassification(GUESS.run, 
                            Smith2014BiomeScheme, 
                            year.aggregate.method = "mean",
                            first.year = 1961,

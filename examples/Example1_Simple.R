@@ -5,7 +5,7 @@ library(raster)
 
 ##### STEP 1 - Define the ModelRun
 run <- defineSource(name = "Example Run",
-                    dir = "/home/forrest/LPJ-GUESS_Global_Run",
+                    dir = "/home/forrest/GuessRuns/Global_Run",
                     format = GUESS)
 
 
