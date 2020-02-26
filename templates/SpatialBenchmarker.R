@@ -1,9 +1,6 @@
 #!/usr/bin/R
 
-### TODO
-# 1. Loop across biomes
-
-
+##### LIBRARIES ETC #####
 library(DGVMTools)
 library(raster)
 library(Cairo)
@@ -12,8 +9,7 @@ source("~/Projects/DGVMTools/Additional/plotUtils.v1.0.R")
 t1 <- Sys.time()
 
 
-##########################################################################################################
-################ HERE SUPPLY VARIOUS RUN SETTINGS 
+##### BENCKMARKING SETTINGS #####
 
 # Analysis label and plot directory
 analysis.label <- "r8498"
@@ -43,11 +39,7 @@ doMultiPlots <- TRUE # make multipanel plots with a panel for each run (groups o
 # DGVMDDirectory
 DGVMData.dir <- "/home/forrest/DGVMData/"
 
-##########################################################################################################
-################ HERE CHOOSE WHICH BENCHMARKS TO DO
-
-# biomes to plot
-biomes <- list(dataset = "HandPBiomes", classification = Smith2014BiomeScheme)
+##### SELECT BENCKMARKS #####
 
 # Define a list of benchmarks
 benchmark.instruction.list <- list(
@@ -116,8 +108,7 @@ benchmark.instruction.list <- list(
 
 
 
-###################################################################
-################ HERE DEFINE THE RUNS
+##### DEFINE THE RUNS #####
 
 # r8498
 
@@ -211,9 +202,7 @@ PNV_SPITFIRE_LasslopWindLimit <- defineSource(id = "PNV_SPITFIRE_LasslopWindLimi
                                               forcing.data = "CRUJRA")
 
 
-#########################################################################################
-################ HERE SELECT WHICH RUNS SHOULD BE PLOTTED INDIVIDUALLY
-
+##### MAKE RUN LIST #####
 runs <- list(
   
   PNV_SPITFIRE,
@@ -232,11 +221,10 @@ runs <- list(
   PNV_SPITFIRE_LasslopWindLimit
 )
 
-#########################################################################################
-################ HERE SELECT WHICH RUNS SHOULD BE PLOTTED TOGETHER AS A GROUP
-################ (NOTE THE RUNS MUST BE INCLUDED IN THE 'runs' LIST ABOVE)
+##### DEFINE PLOT GROUPS #####
+## Note that the runs must be included in th "runs" list above
 
-comparison.groups <- list(
+plot.groups <- list(
   
   # list(runs = list(PNV_SPITFIRE,
   #                  PNV_SPITFIRE_8hr,
@@ -276,8 +264,7 @@ comparison.groups <- list(
 
 
 
-##########################################################################################################
-################ NORMALLY NOTHING TO CHANGE AFTER HERE!
+##### MAIN BENCHMARK LOOP #####
 
 
 # for each benchmark
@@ -328,8 +315,7 @@ for(this.benchmark in benchmark.instruction.list) {
   metrics.df <- data.frame(stringsAsFactors = FALSE, row.names = NULL)
   
   
-  #################################################################################
-  ########  BENCHMARK EACH RUN
+  #####  BENCHMARK EACH RUN #####
   
   # list of Comparison objects for plotting together later
   all.Comparisons <- list()
@@ -449,13 +435,12 @@ for(this.benchmark in benchmark.instruction.list) {
   } # for each run
   
   
-  #################################################################################
-  ########  IF REQUESTED MAKE MULTIPANEL PLOTS - one panel per run
+  ##### DO GROUP PLOTS #####
   
   if(doMultiPlots) {
     
     ### do each comparison group in turn
-    for(group in comparison.groups) {
+    for(group in plot.groups) {
       
       # make a directory for the comparison
       local.group.dir <- file.path(plot.dir, "Groups", group$id)

@@ -1,9 +1,6 @@
 #!/usr/bin/R
 
-### TODO
-# 1. Loop across biomes
-
-
+##### LIBRARIES ETC #####
 library(DGVMTools)
 library(raster)
 library(Cairo)
@@ -12,8 +9,7 @@ source("~/Projects/DGVMTools/Additional/plotUtils.v1.0.R")
 t1 <- Sys.time()
 
 
-##########################################################################################################
-################ HERE SUPPLY VARIOUS RUN SETTINGS 
+##### SETTINGS #####
 
 # Analysis label and plot directory
 analysis.label <- "r8498"
@@ -46,8 +42,7 @@ doDiffPlots <- FALSE
 # DGVMDDirectory
 DGVMData.dir <- "/home/forrest/DGVMData/"
 
-##########################################################################################################
-################ HERE CHOOSE REGIONS TO SUM OVER
+##### DEFINE AND SELECT REGIONS #####
 
 regions <- list(
   Global = list(id = "Global", name = "Global", extent = extent(-180,180,-90,90)),
@@ -68,11 +63,7 @@ regions <- list(
   SHAfrica = list( id = "SHAfrica", name = "Southern Hemisphere Africa", extent = extent(5, 50, -30, 0))
 )
 
-##########################################################################################################
-################ HERE CHOOSE WHICH BENCHMARKS TO DO
-
-# biomes to plot
-biomes <- list(dataset = "HandPBiomes", classification = Smith2014BiomeScheme)
+##### DEFINE AND SELECT BENCHMARKS #####
 
 # Define a list of benchmarks
 benchmark.instruction.list <- list(
@@ -141,8 +132,7 @@ benchmark.instruction.list <- list(
 
 
 
-###################################################################
-################ HERE DEFINE THE RUNS
+##### DEFINE THE RUNS #####
 
 # r8498
 
@@ -234,8 +224,7 @@ PNV_SPITFIRE_LasslopWindLimit <- defineSource(id = "PNV_SPITFIRE_LasslopWindLimi
                                               format = GUESS, 
                                               forcing.data = "CRUJRA")
 
-#########################################################################################
-################ HERE SELECT WHICH RUNS SHOULD BE PLOTTED INDIVIDUALLY
+##### MAKE THE RUN LIST #####
 
 runs <- list(
   
@@ -255,11 +244,10 @@ runs <- list(
   PNV_SPITFIRE_LasslopWindLimit
 )
 
-#########################################################################################
-################ HERE SELECT WHICH RUNS SHOULD BE PLOTTED TOGETHER AS A GROUP
-################ (NOTE THE RUNS MUST BE INCLUDED IN THE 'runs' LIST ABOVE)
+##### DEFINE PLOT GROUPS #####
+## Note the runs must be included in the "runs" list above
 
-comparison.groups <- list(
+plot.groups <- list(
   
   list(runs = list(PNV_SPITFIRE,
                    PNV_SPITFIRE_8hr,
@@ -298,8 +286,8 @@ comparison.groups <- list(
 
 
 
-##########################################################################################################
-################ NORMALLY NOTHING TO CHANGE AFTER HERE!
+##### MAIN BENCHMARK LOOP #####
+## Normally nothing to chaneg after here
 
 # actually not currently used
 BAFracToArea <- function(x, area.unit = "ha"){
@@ -503,7 +491,7 @@ for(this.benchmark in benchmark.instruction.list) {
     if(doMultiPlots) {
       
       ### do each comparison group in turn
-      for(group in comparison.groups) {
+      for(group in plot.groups) {
         
         # make a directory for the comparison
         local.group.dir <- file.path(plot.dir, "Groups", group$id)

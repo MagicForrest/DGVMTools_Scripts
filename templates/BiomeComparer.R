@@ -7,7 +7,7 @@
 library(DGVMTools)
 library(raster)
 library(Cairo)
-source("~/Projects/DGVMTools/Additional/plotUtils.v1.0.R")
+source("~/Tools/DGVMTools_Scripts/utils/PlotUtils.R")
 
 t1 <- Sys.time()
 
@@ -16,8 +16,8 @@ t1 <- Sys.time()
 ################ HERE SUPPLY VARIOUS RUN SETTINGS 
 
 # Analysis label and plot directory
-analysis.label <- "r8498"
-plot.dir <- "/home/forrest/Projects/SPITFIRE/Results/FireMIP2019/DevPlots/r8498"
+analysis.label <- "Example"
+plot.dir <- "/home/forrest/TestPlots"
 if(!file.exists(plot.dir)){dir.create(plot.dir)}
 
 # save run-specific plots to run directory
@@ -33,6 +33,9 @@ last.year = 2000
 # Re-read 
 reread <- FALSE
 
+# preferred difference in between number of rows and columns (can be adjusted depending on
+# the dimensions (Lon/Lat) of the plot extent), but is somewhat arivially asthetic
+preferred.rows.more.than.cols <- 1
 
 ##########################################################################################################
 ################ HERE SELECT WHICH TYPES OF PLOTS TO MAKE
@@ -42,111 +45,33 @@ doMultiPlots <- TRUE # make multipanel plots for the groups defined above (with 
 doDifferencePlots <- TRUE # do difference plots for run pairs (pairs defined above)
 
 # only for plots with multiple layers
-doLayerPlots <- TRUE # plot individual layers (usuually) PFTs
+doLayerPlots <- TRUE # plot individual layers (usually) PFTs
 doAggregates <- TRUE # plot some aggregates 
 
 # only for monthly variables
-doMonthly <- FALSE 
+doMonthly <- TRUE 
 doSeasonal <- TRUE 
 
 # if biome classification - maybe move this to another script
-doBiomes <- TRUE 
-
+doBiomes <- FALSE 
 
 
 ###################################################################
 ################ HERE DEFINE THE RUNS
 
-# r8498
-
-PNV_SPITFIRE <- defineSource(id = "PNV_SPITFIRE",
-                             name = "SPITFIRE (PNV)",
-                             dir = "/home/forrest/GuessRuns/FireMIP/Dev/r8498/PNV_SPITFIRE",
-                             format = GUESS, 
-                             forcing.data = "CRUJRA")
-
-# duration sensitivty tests
-PNV_SPITFIRE_8hr <- defineSource(id = "PNV_SPITFIRE_8hr",
-                                 name = "SPITFIRE (PNV, 8hr)",
-                                 dir = "/home/forrest/GuessRuns/FireMIP/Dev/r8498/PNV_SPITFIRE_8hr",
-                                 format = GUESS, 
-                                 forcing.data = "CRUJRA")
-
-PNV_SPITFIRE_12hr <- defineSource(id = "PNV_SPITFIRE_12hr",
-                                  name = "SPITFIRE (PNV, 12hr)",
-                                  dir = "/home/forrest/GuessRuns/FireMIP/Dev/r8498/PNV_SPITFIRE_12hr",
-                                  format = GUESS, 
-                                  forcing.data = "CRUJRA")
-
-PNV_SPITFIRE_daylength <- defineSource(id = "PNV_SPITFIRE_daylength",
-                                       name = "SPITFIRE (PNV, daylength)",
-                                       dir = "/home/forrest/GuessRuns/FireMIP/Dev/r8498/PNV_SPITFIRE_daylength",
-                                       format = GUESS, 
-                                       forcing.data = "CRUJRA")
-
-# fuel moisture sensitivity tests
-PNV_SPITFIRE_VPD <- defineSource(id = "PNV_SPITFIRE_VPD",
-                                 name = "SPITFIRE (PNV, VPD)",
-                                 dir = "/home/forrest/GuessRuns/FireMIP/Dev/r8498/PNV_SPITFIRE_VPD",
-                                 format = GUESS, 
-                                 forcing.data = "CRUJRA")
-
-PNV_SPITFIRE_NoSoilMoist <- defineSource(id = "PNV_SPITFIRE_NoSoilMoist",
-                                         name = "SPITFIRE (PNV, NoSoilMoist)",
-                                         dir = "/home/forrest/GuessRuns/FireMIP/Dev/r8498/PNV_SPITFIRE_NoSoilMoist",
-                                         format = GUESS, 
-                                         forcing.data = "CRUJRA")
-
-PNV_SPITFIRE_VPD_NoSoilMoist <- defineSource(id = "PNV_SPITFIRE_VPD_NoSoilMoist",
-                                             name = "SPITFIRE (PNV, VPD, NoSoilMoist)",
-                                             dir = "/home/forrest/GuessRuns/FireMIP/Dev/r8498/PNV_SPITFIRE_VPD_NoSoilMoist",
-                                             format = GUESS, 
-                                             forcing.data = "CRUJRA")
-
-# ignitions tests
-PNV_SPITFIRE_Lightning <- defineSource(id = "PNV_SPITFIRE_Lightning",
-                                       name = "SPITFIRE (PNV, Lightning only)",
-                                       dir = "/home/forrest/GuessRuns/FireMIP/Dev/r8498/PNV_SPITFIRE_Lightning",
-                                       format = GUESS, 
-                                       forcing.data = "CRUJRA")
-
-PNV_SPITFIRE_Human <- defineSource(id = "PNV_SPITFIRE_Human",
-                                   name = "SPITFIRE (PNV, Human only)",
-                                   dir = "/home/forrest/GuessRuns/FireMIP/Dev/r8498/PNV_SPITFIRE_Human",
-                                   format = GUESS, 
-                                   forcing.data = "CRUJRA")
-# misc
-PNV_SPITFIRE_1hrSigma <- defineSource(id = "PNV_SPITFIRE_1hrSigma",
-                                      name = "SPITFIRE (PNV, 1hr sigma)",
-                                      dir = "/home/forrest/GuessRuns/FireMIP/Dev/r8498/PNV_SPITFIRE_1hrSigma",
-                                      format = GUESS, 
-                                      forcing.data = "CRUJRA")
-
-PNV_SPITFIRE_SapSizeDecrease <- defineSource(id = "PNV_SPITFIRE_SapSizeDecrease",
-                                             name = "SPITFIRE (PNV, spa size decreased)",
-                                             dir = "/home/forrest/GuessRuns/FireMIP/Dev/r8498/PNV_SPITFIRE_SapSizeDecrease/",
-                                             format = GUESS, 
-                                             forcing.data = "CRUJRA")
-
-PNV_SPITFIRE_OriginalFBD <- defineSource(id = "PNV_SPITFIRE_OriginalFBD",
-                                         name = "SPITFIRE (PNV, Original FBD)",
-                                         dir = "/home/forrest/GuessRuns/FireMIP/Dev/r8498/PNV_SPITFIRE_OriginalFBD/",
-                                         format = GUESS, 
-                                         forcing.data = "CRUJRA")
-
 # wind limit (r8511)
 PNV_SPITFIRE_NoWindLimit <- defineSource(id = "PNV_SPITFIRE_NoWindLimit",
                                          name = "SPITFIRE (PNV, No Wind Limit)",
-                                         dir = "/home/forrest/GuessRuns/FireMIP/Dev/r8511/PNV_SPITFIRE_NoWindLimit/",
+                                         dir = "/home/forrest/GuessRuns/FireMIP/PNV_SPITFIRE_NoWindLimit/",
                                          format = GUESS, 
                                          forcing.data = "CRUJRA")
 
 
 PNV_SPITFIRE_LasslopWindLimit <- defineSource(id = "PNV_SPITFIRE_LasslopWindLimit",
-                                         name = "SPITFIRE (PNV, Lasslop Wind Limit)",
-                                         dir = "/home/forrest/GuessRuns/FireMIP/Dev/r8511/PNV_SPITFIRE_LasslopWindLimit/",
-                                         format = GUESS, 
-                                         forcing.data = "CRUJRA")
+                                              name = "SPITFIRE (PNV, Lasslop Wind Limit)",
+                                              dir = "/home/forrest/GuessRuns/FireMIP/PNV_SPITFIRE_LasslopWindLimit/",
+                                              format = GUESS, 
+                                              forcing.data = "CRUJRA")
 
 
 
@@ -157,18 +82,6 @@ PNV_SPITFIRE_LasslopWindLimit <- defineSource(id = "PNV_SPITFIRE_LasslopWindLimi
 
 runs <- list(
   
-  PNV_SPITFIRE,
-  # PNV_SPITFIRE_8hr,
-  # PNV_SPITFIRE_12hr,
-  # PNV_SPITFIRE_daylength,
-  # PNV_SPITFIRE_VPD,
-  # PNV_SPITFIRE_NoSoilMoist,
-  # PNV_SPITFIRE_VPD_NoSoilMoist,
-  # PNV_SPITFIRE_Human,
-  # PNV_SPITFIRE_Lightning,
-  # PNV_SPITFIRE_1hrSigma,
-  # PNV_SPITFIRE_SapSizeDecrease,
-  # PNV_SPITFIRE_OriginalFBD,
   PNV_SPITFIRE_NoWindLimit,
   PNV_SPITFIRE_LasslopWindLimit
   
@@ -179,35 +92,7 @@ runs <- list(
 
 comparison.groups <- list(
   
-  # list(runs = list(PNV_SPITFIRE,
-  #                  PNV_SPITFIRE_8hr,
-  #                  PNV_SPITFIRE_12hr,
-  #                  PNV_SPITFIRE_daylength),
-  #      name = "Fire Duration",
-  #      id = "FireDuration"
-  # ),
-  # list(runs = list(PNV_SPITFIRE,
-  #                  PNV_SPITFIRE_VPD,
-  #                  PNV_SPITFIRE_NoSoilMoist,
-  #                  PNV_SPITFIRE_VPD_NoSoilMoist),
-  #      name = "Fuel Moisture",
-  #      id = "FuelMoisture"
-  # ),
-  # list(runs = list(PNV_SPITFIRE,
-  #                  PNV_SPITFIRE_Human,
-  #                  PNV_SPITFIRE_Lightning),
-  #      name = "Ignitions",
-  #      id = "Ignitions"
-  # ),
-  # list(runs = list(PNV_SPITFIRE,
-  #                  PNV_SPITFIRE_1hrSigma,
-  #                  PNV_SPITFIRE_SapSizeDecrease,
-  #                  PNV_SPITFIRE_OriginalFBD),
-  #      name = "Misc",
-  #      id = "Misc"
-  # ),
-  list(runs = list(PNV_SPITFIRE,
-                   PNV_SPITFIRE_NoWindLimit,
+  list(runs = list(PNV_SPITFIRE_NoWindLimit,
                    PNV_SPITFIRE_LasslopWindLimit),
        name = "Wind Limits",
        id = "WindLimit"
@@ -220,19 +105,7 @@ comparison.groups <- list(
 ################ HERE SELECT PAIRS OF RUNS WHICH SHOULD BE COMPARED DIRECTLY AGAINST EACH OTHER  
 
 difference.pairs <- list(
-  # list("base" =  PNV_SPITFIRE, "new" = PNV_SPITFIRE_8hr),
-  # list("base" =  PNV_SPITFIRE, "new" = PNV_SPITFIRE_12hr),
-  # list("base" =  PNV_SPITFIRE, "new" = PNV_SPITFIRE_daylength),
-  # list("base" =  PNV_SPITFIRE, "new" = PNV_SPITFIRE_VPD),
-  # list("base" =  PNV_SPITFIRE, "new" = PNV_SPITFIRE_NoSoilMoist),
-  # list("base" =  PNV_SPITFIRE, "new" = PNV_SPITFIRE_VPD_NoSoilMoist),
-  # list("base" =  PNV_SPITFIRE, "new" = PNV_SPITFIRE_Lightning),
-  # list("base" =  PNV_SPITFIRE, "new" = PNV_SPITFIRE_Human),
-  # list("base" =  PNV_SPITFIRE, "new" = PNV_SPITFIRE_1hrSigma),
-  # list("base" =  PNV_SPITFIRE, "new" = PNV_SPITFIRE_SapSizeDecrease),
-  # list("base" =  PNV_SPITFIRE, "new" = PNV_SPITFIRE_OriginalFBD),
-  list("base" =  PNV_SPITFIRE, "new" = PNV_SPITFIRE_NoWindLimit),
-  list("base" =  PNV_SPITFIRE, "new" = PNV_SPITFIRE_LasslopWindLimit)
+  list("base" =  PNV_SPITFIRE_NoWindLimit, "new" = PNV_SPITFIRE_LasslopWindLimit)
 )
 
 
@@ -346,21 +219,15 @@ for(var.details in vars.to.plot) {
     # determine if it is monthly
     isMonthly <- "Month" %in% getDimInfo(this.model.field)
     
-    # calculate optimal number of columns, based on having one more row than columns
-    opt.ncols  <- 1
-    if(isMonthly) npanels <- length(layers(this.model.field)) * getDimInfo(this.model.field, "size")$Month
-    else npanels <- length(layers(this.model.field)) 
-    
-    while(opt.ncols * (opt.ncols + 1) < npanels) {
-      opt.ncols <- opt.ncols +1
-    }
     
     ### always make a summary plot of all layers 
     summary.plot <- plotSpatial(this.model.field,
                                 cuts = var.cuts,
                                 map.overlay = map.overlay,
                                 text.multiplier = 2, 
-                                ncol = opt.ncols)
+                                ncol = nOptCols(this.model.field, preferred.rows.more.than.cols, "Spatial")    # calculate optimal number of columns, based on having one more row than columns
+    )
+    
     magicPlot(summary.plot, 
               filename = file.path(run.plot.dir, paste(var.str, "Summary", paste0(first.year, "-", last.year), analysis.label, sep = ".")))
     
@@ -372,7 +239,10 @@ for(var.details in vars.to.plot) {
       annual.plot <- plotSpatial(this.model.field.annual,
                                  cuts = var.cuts,
                                  map.overlay = map.overlay,
-                                 text.multiplier = 2)
+                                 text.multiplier = 2,
+                                 ncol = nOptCols(this.model.field.annual, preferred.rows.more.than.cols, "Spatial")    # calculate optimal number of columns, based on having one more row than columns
+      )
+      
       magicPlot(annual.plot, 
                 filename = file.path(run.plot.dir, paste(var.str, "AnnualSum", paste0(first.year, "-", last.year), analysis.label, sep = ".")))
       
@@ -384,7 +254,9 @@ for(var.details in vars.to.plot) {
                                     month = month@index,
                                     cuts = var.cuts,
                                     map.overlay = map.overlay,
-                                    text.multiplier = 2)
+                                    text.multiplier = 2,
+                                    ncol = nOptCols(this.model.field, preferred.rows.more.than.cols, "Spatial")    # calculate optimal number of columns, based on having one more row than columns
+          )
           magicPlot(month.plot, 
                     filename = file.path(run.plot.dir, paste(var.str, month@id, paste0(first.year, "-", last.year), analysis.label, sep = ".")))
         }
@@ -400,7 +272,9 @@ for(var.details in vars.to.plot) {
         season.plot <- plotSpatial(this.model.field.seasonal,
                                    cuts = var.cuts,
                                    map.overlay = map.overlay,
-                                   text.multiplier = 2)
+                                   text.multiplier = 2,
+                                   ncol = nOptCols(this.model.field.seasonal, preferred.rows.more.than.cols, "Spatial")    # calculate optimal number of columns, based on having one more row than columns
+        )
         magicPlot(season.plot, 
                   filename = file.path(run.plot.dir, paste(var.str, "Seasons", "Sum", paste0(first.year, "-", last.year), analysis.label, sep = ".")))
         
@@ -428,7 +302,9 @@ for(var.details in vars.to.plot) {
                                        layers = this.layer,
                                        map.overlay = map.overlay,
                                        text.multiplier = 2,
-                                       cuts = var.cuts)
+                                       cuts = var.cuts, 
+                                       ncol = nOptCols(this.model.field, preferred.rows.more.than.cols, "Spatial", nlayers = 1))
+        
         magicPlot(individual.plot, 
                   filename = file.path(run.plot.dir, paste(var.str, this.layer, paste0(first.year, "-", last.year), analysis.label, sep = ".")))
       }
@@ -508,7 +384,6 @@ for(var.details in vars.to.plot) {
                                           map.overlay = map.overlay,
                                           text.multiplier = 2,
                                           cuts = var.cuts)
-          if(length(local.field.list) > 1) group.layer.plot <- group.layer.plot + facet_wrap(~Facet, nrow = 2)
           magicPlot(group.layer.plot, 
                     filename = file.path(local.group.dir, paste(var.str, group$id, this.layer, paste0(first.year, "-", last.year), analysis.label, sep = ".")))
         } # for each layer
@@ -522,7 +397,8 @@ for(var.details in vars.to.plot) {
         annual.plot <- plotSpatial(local.field.annual.list,
                                    cuts = var.cuts,
                                    map.overlay = map.overlay,
-                                   text.multiplier = 2)
+                                   text.multiplier = 2,
+                                   ncol = nOptCols(length(local.field.annual.list), preferred.rows.more.than.cols))
         magicPlot(annual.plot, 
                   filename = file.path(local.group.dir, paste(var.str, "AnnualSum", paste0(first.year, "-", last.year), analysis.label, sep = ".")))
         
@@ -534,7 +410,8 @@ for(var.details in vars.to.plot) {
                                       month = month@index,
                                       cuts = var.cuts,
                                       map.overlay = map.overlay,
-                                      text.multiplier = 2)
+                                      text.multiplier = 2,
+                                      ncol = nOptCols(length(local.field.list), preferred.rows.more.than.cols))
             magicPlot(month.plot, 
                       filename = file.path(local.group.dir, paste(var.str, month@id, paste0(first.year, "-", last.year), analysis.label, sep = ".")))
           }
@@ -548,28 +425,29 @@ for(var.details in vars.to.plot) {
                                      cuts = var.cuts,
                                      map.overlay = map.overlay,
                                      text.multiplier = 2)
+          season.plot <- season.plot + facet_grid(cols = vars(Source), rows = vars(Season, switch = "y"))
           magicPlot(season.plot, 
                     filename = file.path(local.group.dir, paste(var.str, "Seasons", "Sum", paste0(first.year, "-", last.year), analysis.label, sep = ".")))
           
           # plot seasons individually
           for(season in all.seasons) {
+            
+            
+            
             season.plot <- plotSpatial(local.field.seasonal.list, 
                                        seasons = season@id,
                                        cuts = var.cuts,
                                        map.overlay = map.overlay,
-                                       text.multiplier = 2)
-            print(season.plot)
-            stop()
+                                       text.multiplier = 2                                       ,
+                                       ncol = nOptCols(length(local.field.seasonal.list), preferred.rows.more.than.cols, ntimes = 1))
             magicPlot(season.plot, 
                       filename = file.path(local.group.dir, paste(var.str, season@id, "Sum", paste0(first.year, "-", last.year), analysis.label, sep = ".")))
-          
-          
             
-          }
+          } # for each season
           
-        }
+        } # if do seasonal plots 
         
-      }
+      } # if variable is monthly
       
       
       ### layer aggregates
@@ -634,11 +512,13 @@ for(var.details in vars.to.plot) {
         # make the comparison layer
         this.comparison <- compareLayers(new.field, base.field, layers1 = layer, show.stats = FALSE)
         
-        
         # plot the difference
+        nMonths <- 1
+        if("Month" %in% getDimInfo(this.comparison)) nMonths <- getDimInfo(this.comparison, "size")$Month
         diff.layer.plot<- plotSpatialComparison(this.comparison, 
                                                 map.overlay = "world",
-                                                text.multiplier = 2)
+                                                text.multiplier = 2,
+                                                ncol = nOptCols(nMonths, rows.more.than.cols = preferred.rows.more.than.cols))
         magicPlot(diff.layer.plot, 
                   filename = file.path(local.comparison.dir, paste(layer, quant@id, "Diff", analysis.label, paste0(first.year, "-", last.year), sep = ".")))
         
@@ -646,10 +526,120 @@ for(var.details in vars.to.plot) {
         abs.layer.plot <- plotSpatialComparison(this.comparison, 
                                                 type = "values",
                                                 map.overlay = "world",
-                                                text.multiplier = 2)
-        if(length(local.field.list) > 1) abs.layer.plot <- abs.layer.plot + facet_wrap(~Facet, nrow = 2)
+                                                text.multiplier = 2,
+                                                ncol = nOptCols(nMonths * 2, rows.more.than.cols = preferred.rows.more.than.cols))
         magicPlot(abs.layer.plot, 
                   filename = file.path(local.comparison.dir, paste(layer, quant@id, "2-up", analysis.label, paste0(first.year, "-", last.year), sep = ".")))
+        
+        # do Difference plots for Monthly variables
+        ### If variable is do sums monthly, also 
+        if(isMonthly) {
+          
+          # make the annual comparison layer
+          this.comparison <- compareLayers(field.annual.list[[new@id]], field.annual.list[[base@id]], layers1 = layer, show.stats = FALSE)
+          
+          # plot difference
+          diff.layer.plot <- plotSpatialComparison(this.comparison, 
+                                                  map.overlay = "world",
+                                                  text.multiplier = 2,
+                                                  ncol = 1)
+          magicPlot(diff.layer.plot, 
+                    filename = file.path(local.comparison.dir, paste(layer, quant@id, "AnnualSum", "Diff", analysis.label, paste0(first.year, "-", last.year), sep = ".")))
+          
+          # plot the values
+          abs.layer.plot <- plotSpatialComparison(this.comparison, 
+                                                  type = "values",
+                                                  map.overlay = "world",
+                                                  text.multiplier = 2,
+                                                  ncol = 1)
+          magicPlot(abs.layer.plot, 
+                    filename = file.path(local.comparison.dir, paste(layer, quant@id, "AnnualSum", "2-up", analysis.label, paste0(first.year, "-", last.year), sep = ".")))
+          
+          if(doMonthly) {
+            
+            # plot months individually
+            for(month in all.months) {
+              
+              # make the annual comparison layer
+              this.comparison <- compareLayers(selectMonths(new.field, month@index), selectMonths(base.field, month@index), layers1 = layer, show.stats = FALSE)
+          
+              diff.layer.plot <- plotSpatialComparison(this.comparison, 
+                                                       map.overlay = "world",
+                                                       text.multiplier = 2,
+                                                       ncol = 1)
+              magicPlot(diff.layer.plot, 
+                        filename = file.path(local.comparison.dir, paste(layer, quant@id, month@abbreviation, "Diff", analysis.label, paste0(first.year, "-", last.year), sep = ".")))
+              
+              # plot the values
+              abs.layer.plot <- plotSpatialComparison(this.comparison, 
+                                                      type = "values",
+                                                      map.overlay = "world",
+                                                      text.multiplier = 2,
+                                                      ncol = 1)
+              magicPlot(abs.layer.plot, 
+                        filename = file.path(local.comparison.dir, paste(layer, quant@id, month@abbreviation, "2-up", analysis.label, paste0(first.year, "-", last.year), sep = ".")))
+            } # for each month
+            
+          } # end if doMonthly
+          
+          if(doSeasonal) {
+            
+            base.field <- field.seasonal.list[[base@id]]
+            new.field <- field.seasonal.list[[new@id]]
+            
+            seasonal.comparison <- compareLayers(new.field, base.field, layers1 = layer, show.stats = FALSE)
+            
+            # plot the difference
+            nSeasons <- 1
+            if("Season" %in% getDimInfo(seasonal.comparison)) nSeasons <- getDimInfo(seasonal.comparison, "size")$Season
+            
+            
+            # plot difference
+            diff.layer.plot <- plotSpatialComparison(seasonal.comparison, 
+                                                     map.overlay = "world",
+                                                     text.multiplier = 2,
+                                                     ncol = nOptCols(nSeasons, rows.more.than.cols = preferred.rows.more.than.cols))
+           
+              magicPlot(diff.layer.plot, 
+                      filename = file.path(local.comparison.dir, paste(layer, quant@id, "SeasonalSum", "Diff", analysis.label, paste0(first.year, "-", last.year), sep = ".")))
+            
+            # plot the values
+            abs.layer.plot <- plotSpatialComparison(seasonal.comparison, 
+                                                    type = "values",
+                                                    map.overlay = "world",
+                                                    text.multiplier = 2)
+            abs.layer.plot <- abs.layer.plot + facet_grid(cols = vars(Season), rows = vars(Source), switch = y)
+            
+            magicPlot(abs.layer.plot, 
+                      filename = file.path(local.comparison.dir, paste(layer, quant@id, "SeasonalSum", "2-up", analysis.label, paste0(first.year, "-", last.year), sep = ".")))
+            
+            # plot seasons individually
+            for(season in all.seasons) {
+              
+              # make the annual comparison layer
+              this.comparison <- compareLayers(selectSeasons(new.field, season@abbreviation), selectSeasons(base.field, season@abbreviation), layers1 = layer, show.stats = FALSE)
+              
+              diff.layer.plot <- plotSpatialComparison(this.comparison, 
+                                                       map.overlay = "world",
+                                                       text.multiplier = 2,
+                                                       ncol = 1)
+              magicPlot(diff.layer.plot, 
+                        filename = file.path(local.comparison.dir, paste(layer, quant@id, season@abbreviation, "Diff", analysis.label, paste0(first.year, "-", last.year), sep = ".")))
+              
+              # plot the values
+              abs.layer.plot <- plotSpatialComparison(this.comparison, 
+                                                      type = "values",
+                                                      map.overlay = "world",
+                                                      text.multiplier = 2,
+                                                      ncol = 1)
+              magicPlot(abs.layer.plot, 
+                        filename = file.path(local.comparison.dir, paste(layer, quant@id, season@abbreviation, "2-up", analysis.label, paste0(first.year, "-", last.year), sep = ".")))
+
+              } # for each season
+            
+          } # if do seasonal plots 
+          
+        } # if variable is monthly
         
       } # for each layer 
       
