@@ -4,27 +4,22 @@
 library(DGVMTools)
 library(raster)
 library(Cairo)
-source("~/Projects/DGVMTools/Additional/plotUtils.v1.0.R")
+source("~/Tools/DGVMTools_Scripts/utils/PlotUtils.R")
 
 t1 <- Sys.time()
-
 
 ##### SETTINGS #####
 
 # Analysis label and plot directory
 analysis.label <- "r8498"
-plot.dir <- "/home/forrest/Projects/SPITFIRE/Results/FireMIP2019/DevPlots/r8498"
+plot.dir <- "/home/forrest/TestPlots"
 if(!file.exists(plot.dir)){dir.create(plot.dir)}
 
 # save run-specific plots to run directory
 savePlotsToRunDir <- FALSE
 
-# Overlay
-map.overlay <- "world"
-
-# location of statistic metrics/summaries on plots (if selected)
-metrics.xy= c(x=-140, y=-25)
-summaries.xy= c(x=-130, y=-40)
+# annotation text size scaler
+text.size.scalar <- 0.8
 
 # File reading options 
 read.full <- FALSE
@@ -37,10 +32,10 @@ resolution <- "HD"
 # which plots to make
 doIndividualPlots <- TRUE # plot individual run benckmarks
 doMultiPlots <- TRUE # make multipanel plots with a panel for each run (groups of runs to plot together should be defined below)
-doDiffPlots <- FALSE
+doDiffPlots <- TRUE
 
 # DGVMDDirectory
-DGVMData.dir <- "/home/forrest/DGVMData/"
+DGVMData.dir <- "/home/forrest/Data/DGVMData/"
 
 ##### DEFINE AND SELECT REGIONS #####
 
@@ -78,7 +73,9 @@ benchmark.instruction.list <- list(
                       "first.year" = 1996,
                       "last.year" = 2013,
                       "layer.name" = "Total",
-                      "unit" = "%",
+                      "unit" = "Mha",
+                      unit.conversion = 1/(10^10),
+                      variable.name = "Burnt Area",
                       "cuts" = c(0,0.002,0.005,0.01,0.02,0.05,0.10,0.2,0.50,1),
                       #"show.summary" = NULL,
                       show.metrics = c("NME", "NME_2", "r2", "m", "c"))
@@ -134,160 +131,64 @@ benchmark.instruction.list <- list(
 
 ##### DEFINE THE RUNS #####
 
-# r8498
-
-PNV_SPITFIRE <- defineSource(id = "PNV_SPITFIRE",
-                             name = "SPITFIRE (PNV)",
-                             dir = "/home/forrest/GuessRuns/FireMIP/Dev/r8498/PNV_SPITFIRE",
-                             format = GUESS, 
-                             forcing.data = "CRUJRA")
-
-# duration sensitivty tests
-PNV_SPITFIRE_8hr <- defineSource(id = "PNV_SPITFIRE_8hr",
-                                 name = "SPITFIRE (PNV, 8hr)",
-                                 dir = "/home/forrest/GuessRuns/FireMIP/Dev/r8498/PNV_SPITFIRE_8hr",
-                                 format = GUESS, 
-                                 forcing.data = "CRUJRA")
-
-PNV_SPITFIRE_12hr <- defineSource(id = "PNV_SPITFIRE_12hr",
-                                  name = "SPITFIRE (PNV, 12hr)",
-                                  dir = "/home/forrest/GuessRuns/FireMIP/Dev/r8498/PNV_SPITFIRE_12hr",
-                                  format = GUESS, 
-                                  forcing.data = "CRUJRA")
-
-PNV_SPITFIRE_daylength <- defineSource(id = "PNV_SPITFIRE_daylength",
-                                       name = "SPITFIRE (PNV, daylength)",
-                                       dir = "/home/forrest/GuessRuns/FireMIP/Dev/r8498/PNV_SPITFIRE_daylength",
-                                       format = GUESS, 
-                                       forcing.data = "CRUJRA")
-
-# fuel moisture sensitivity tests
-PNV_SPITFIRE_VPD <- defineSource(id = "PNV_SPITFIRE_VPD",
-                                 name = "SPITFIRE (PNV, VPD)",
-                                 dir = "/home/forrest/GuessRuns/FireMIP/Dev/r8498/PNV_SPITFIRE_VPD",
-                                 format = GUESS, 
-                                 forcing.data = "CRUJRA")
-
-PNV_SPITFIRE_NoSoilMoist <- defineSource(id = "PNV_SPITFIRE_NoSoilMoist",
-                                         name = "SPITFIRE (PNV, NoSoilMoist)",
-                                         dir = "/home/forrest/GuessRuns/FireMIP/Dev/r8498/PNV_SPITFIRE_NoSoilMoist",
-                                         format = GUESS, 
-                                         forcing.data = "CRUJRA")
-
-PNV_SPITFIRE_VPD_NoSoilMoist <- defineSource(id = "PNV_SPITFIRE_VPD_NoSoilMoist",
-                                             name = "SPITFIRE (PNV, VPD, NoSoilMoist)",
-                                             dir = "/home/forrest/GuessRuns/FireMIP/Dev/r8498/PNV_SPITFIRE_VPD_NoSoilMoist",
-                                             format = GUESS, 
-                                             forcing.data = "CRUJRA")
-
-# ignitions tests
-PNV_SPITFIRE_Lightning <- defineSource(id = "PNV_SPITFIRE_Lightning",
-                                       name = "SPITFIRE (PNV, Lightning only)",
-                                       dir = "/home/forrest/GuessRuns/FireMIP/Dev/r8498/PNV_SPITFIRE_Lightning",
-                                       format = GUESS, 
-                                       forcing.data = "CRUJRA")
-
-PNV_SPITFIRE_Human <- defineSource(id = "PNV_SPITFIRE_Human",
-                                   name = "SPITFIRE (PNV, Human only)",
-                                   dir = "/home/forrest/GuessRuns/FireMIP/Dev/r8498/PNV_SPITFIRE_Human",
-                                   format = GUESS, 
-                                   forcing.data = "CRUJRA")
-# misc
-PNV_SPITFIRE_1hrSigma <- defineSource(id = "PNV_SPITFIRE_1hrSigma",
-                                      name = "SPITFIRE (PNV, 1hr sigma)",
-                                      dir = "/home/forrest/GuessRuns/FireMIP/Dev/r8498/PNV_SPITFIRE_1hrSigma",
-                                      format = GUESS, 
-                                      forcing.data = "CRUJRA")
-
-PNV_SPITFIRE_SapSizeDecrease <- defineSource(id = "PNV_SPITFIRE_SapSizeDecrease",
-                                             name = "SPITFIRE (PNV, sap size decreased)",
-                                             dir = "/home/forrest/GuessRuns/FireMIP/Dev/r8498/PNV_SPITFIRE_SapSizeDecrease/",
-                                             format = GUESS, 
-                                             forcing.data = "CRUJRA")
-
-PNV_SPITFIRE_OriginalFBD <- defineSource(id = "PNV_SPITFIRE_OriginalFBD",
-                                         name = "SPITFIRE (PNV, Original FBD)",
-                                         dir = "/home/forrest/GuessRuns/FireMIP/Dev/r8498/PNV_SPITFIRE_OriginalFBD/",
-                                         format = GUESS, 
-                                         forcing.data = "CRUJRA")
-
 # wind limit (r8511)
 PNV_SPITFIRE_NoWindLimit <- defineSource(id = "PNV_SPITFIRE_NoWindLimit",
                                          name = "SPITFIRE (PNV, No Wind Limit)",
-                                         dir = "/home/forrest/GuessRuns/FireMIP/Dev/r8511/PNV_SPITFIRE_NoWindLimit/",
+                                         dir = "/home/forrest/GuessRuns/FireMIP/PNV_SPITFIRE_NoWindLimit/",
                                          format = GUESS, 
                                          forcing.data = "CRUJRA")
 
+
 PNV_SPITFIRE_LasslopWindLimit <- defineSource(id = "PNV_SPITFIRE_LasslopWindLimit",
                                               name = "SPITFIRE (PNV, Lasslop Wind Limit)",
-                                              dir = "/home/forrest/GuessRuns/FireMIP/Dev/r8511/PNV_SPITFIRE_LasslopWindLimit/",
+                                              dir = "/home/forrest/GuessRuns/FireMIP/PNV_SPITFIRE_LasslopWindLimit/",
                                               format = GUESS, 
                                               forcing.data = "CRUJRA")
+
+PNV_SPITFIRE_AndrewsWindLimit <- defineSource(id = "PNV_SPITFIRE_AndrewsWindLimit",
+                                         name = "SPITFIRE (PNV, Andrews Limit)",
+                                         dir = "/home/forrest/GuessRuns/FireMIP/PNV_SPITFIRE_AndrewsWindLimit/",
+                                         format = GUESS, 
+                                         forcing.data = "CRUJRA")
+
+
+PNV_SPITFIRE_RothermelWindLimit <- defineSource(id = "PNV_SPITFIRE_RothermelWindLimit",
+                                              name = "SPITFIRE (PNV, Rothermel Wind Limit)",
+                                              dir = "/home/forrest/GuessRuns/FireMIP/PNV_SPITFIRE_RothermelWindLimit/",
+                                              format = GUESS, 
+                                              forcing.data = "CRUJRA")
+
 
 ##### MAKE THE RUN LIST #####
 
 runs <- list(
   
-  PNV_SPITFIRE,
-  PNV_SPITFIRE_8hr,
-  PNV_SPITFIRE_12hr,
-  PNV_SPITFIRE_daylength,
-  PNV_SPITFIRE_VPD,
-  PNV_SPITFIRE_NoSoilMoist,
-  PNV_SPITFIRE_VPD_NoSoilMoist,
-  PNV_SPITFIRE_Human,
-  PNV_SPITFIRE_Lightning,
-  PNV_SPITFIRE_1hrSigma,
-  PNV_SPITFIRE_SapSizeDecrease,
-  PNV_SPITFIRE_OriginalFBD,
+  
   PNV_SPITFIRE_NoWindLimit,
-  PNV_SPITFIRE_LasslopWindLimit
+  PNV_SPITFIRE_LasslopWindLimit,
+  PNV_SPITFIRE_AndrewsWindLimit,
+  PNV_SPITFIRE_RothermelWindLimit
 )
 
 ##### DEFINE PLOT GROUPS #####
 ## Note the runs must be included in the "runs" list above
 
+
 plot.groups <- list(
   
-  list(runs = list(PNV_SPITFIRE,
-                   PNV_SPITFIRE_8hr,
-                   PNV_SPITFIRE_12hr,
-                   PNV_SPITFIRE_daylength),
-       name = "Fire Duration",
-       id = "FireDuration"
-  ),
-  list(runs = list(PNV_SPITFIRE,
-                   PNV_SPITFIRE_VPD,
-                   PNV_SPITFIRE_NoSoilMoist,
-                   PNV_SPITFIRE_VPD_NoSoilMoist),
-       name = "Fuel Moisture",
-       id = "FuelMoisture"
-  ),
-  list(runs = list(PNV_SPITFIRE,
-                   PNV_SPITFIRE_Human,
-                   PNV_SPITFIRE_Lightning),
-       name = "Ignitions",
-       id = "Ignitions"
-  ), 
-  list(runs = list(PNV_SPITFIRE,
-                   PNV_SPITFIRE_1hrSigma,
-                   PNV_SPITFIRE_SapSizeDecrease,
-                   PNV_SPITFIRE_OriginalFBD),
-       name = "Misc",
-       id = "Misc"
-  ),
-  list(runs = list(PNV_SPITFIRE,
-                   PNV_SPITFIRE_NoWindLimit,
-                   PNV_SPITFIRE_LasslopWindLimit),
+  list(runs = list(PNV_SPITFIRE_NoWindLimit,
+                   PNV_SPITFIRE_LasslopWindLimit,
+                   PNV_SPITFIRE_AndrewsWindLimit,
+                   PNV_SPITFIRE_RothermelWindLimit),
        name = "Wind Limits",
        id = "WindLimit"
   )
+  
 )
 
 
-
 ##### MAIN BENCHMARK LOOP #####
-## Normally nothing to chaneg after here
+## Normally nothing to change after here
 
 # actually not currently used
 BAFracToArea <- function(x, area.unit = "ha"){
@@ -325,7 +226,12 @@ for(this.benchmark in benchmark.instruction.list) {
                                 read.full = read.full,
                                 verbose = verbose)
     
+    # set names and convert units
     this.Data.Field@data <- setnames(this.Data.Field@data, layers(this.Data.Field), this.benchmark$variable)
+    this.Data.Field <- layerOp(this.Data.Field, operator = "mulc", layers = layers(this.Data.Field), new.layer = layers(this.Data.Field), constant = this.benchmark$unit.conversion)
+    this.Data.Field@quant@units <- this.benchmark$unit
+    this.Data.Field@quant@name <- this.benchmark$variable.name
+    
     
     print(paste0("### Read benchmarking data: ", this.benchmark$name))
     
@@ -388,6 +294,11 @@ for(this.benchmark in benchmark.instruction.list) {
                                    read.full = read.full,
                                    verbose = verbose)
       
+      # set names and convert units
+      this.Model.Field <- layerOp(this.Model.Field, operator = "mulc", layers = layers(this.Model.Field), new.layer = layers(this.Model.Field), constant = this.benchmark$unit.conversion)
+      this.Model.Field@quant@units <- this.benchmark$unit
+      this.Model.Field@quant@name <- this.benchmark$variable.name
+      
       print(paste0("* Read data: ", run@name, " vs. ", this.benchmark$name))
       
       # do the comparison
@@ -425,8 +336,7 @@ for(this.benchmark in benchmark.instruction.list) {
         # for this plot
         labels.wanted <- which(field.names.vec %in% c(this.Model.Field@source@name, this.Data.Field@source@name))
         sum.labels.df <-  data.frame(label = sum.labels.vec[labels.wanted], 
-                                     Facet = field.names.vec[labels.wanted], 
-                                     x = summaries.xy["x"], y = summaries.xy["y"])
+                                     Layer = field.names.vec[labels.wanted])
       }
       
       
@@ -434,23 +344,36 @@ for(this.benchmark in benchmark.instruction.list) {
         
         if(doDiffPlots) {
           # plot the difference
-          this.diff.plot <- plotTemporal(list(this.Data.Field, this.Model.Field),
-                                         text.multiplier = 2)
+          this.diff.plot <- plotTemporalComparison(this.comparison,
+                                                   text.multiplier = 2,
+                                                   symmetric.scale = FALSE,
+                                                   sizes = 2)
           
           # add metric stats to plot
           if(length(this.benchmark$show.metrics) > 0) {
+            
             # select the stats we want
             selected.metrics.df <- metrics.df[which(metrics.df$Source %in% c(this.Data.Field@source@name, this.Model.Field@source@name)), append("Source", this.benchmark$show.metrics)]
             # build a data.frame of the required stats (starting from and empty data.frame)
             metrics.label.df <- data.frame(stringsAsFactors = FALSE)
-            for(row.i in 1:nrow(selected.metrics.df))  metrics.label.df <- rbind(metrics.label.df,
-                                                                                 list("label" = paste(names(selected.metrics.df[row.i,this.benchmark$show.metrics]), round(selected.metrics.df[row.i,this.benchmark$show.metrics],3), sep = "=", collapse = "\n"),
-                                                                                      Facet = selected.metrics.df$Source[row.i],
-                                                                                      x = stats.xy["x"],
-                                                                                      y = stats.xy["y"]),
-                                                                                 stringsAsFactors = FALSE)
+            for(row.i in 1:nrow(selected.metrics.df)) {
+              metrics.label.df <- rbind(metrics.label.df,
+                                        list("label" = paste(names(selected.metrics.df[row.i,this.benchmark$show.metrics]), round(selected.metrics.df[row.i,this.benchmark$show.metrics],3), sep = "=", collapse = "\n"),
+                                             Layer = paste("Difference", this.benchmark$variable, sep = " ")),
+                                        stringsAsFactors = FALSE)
+            }
             # add the stats to the plot
-            this.diff.plot  <- this.diff.plot  + geom_text(data = metrics.label.df,  mapping = aes(x = x, y = y, label = label))
+            # x locations b0n 20% along the year axis
+            range.x.days <- ggplot_build(this.diff.plot)$layout$panel_scales_x[[1]]$range$range
+            metrics.label.df$x <- as.Date(((range.x.days[2] - range.x.days[1]) * 0.2) + range.x.days[1], origin = as.Date("1970-01-01"))
+            
+            # y location fixed at 15% up the plot area
+            range.y <- ggplot_build(this.diff.plot)$layout$panel_scales_y[[1]]$range$range
+            range.y <- c(min(-abs(range.y)), max(abs(range.y)))
+            this.y <- ((range.y[2] - range.y[1]) * 0.1) + range.y[1]
+            metrics.label.df$y <- this.y
+            
+            this.diff.plot  <- this.diff.plot  + geom_text(data = metrics.label.df,  mapping = aes(x = x, y = y, label = label), size = theme_get()$text$size * text.size.scalar)
           }
           
           magicPlot(this.diff.plot,
@@ -460,15 +383,17 @@ for(this.benchmark in benchmark.instruction.list) {
         }
         
         # plot the values
-        this.values.plot <- plotTemporal(list(this.Data.Field, this.Model.Field), 
-                                         text.multiplier = 2,
-                                         nrow = 2,
-                                         col.by = "Source")
+        this.values.plot <- plotTemporalComparison(this.comparison,
+                                                   type = "values",
+                                                   text.multiplier = 2,
+                                                   nrow = 2,
+                                                   col.by = "Source",
+                                                   sizes = 2)
         
         if(length(this.benchmark$show.summary) > 0) {   
           this.values.plot  <- this.values.plot  + geom_text(data = sum.labels.df,  mapping = aes(x = x, y = y, label = label))
         }
-         
+        
         magicPlot(this.values.plot, 
                   filename = file.path(run.plot.dir , paste(this.benchmark$dataset, "TS", "2-up", this.region$id, analysis.label, paste0(this.benchmark$first.year, "-", this.benchmark$last.year), sep = ".")),
                   height = 900,
@@ -510,7 +435,6 @@ for(this.benchmark in benchmark.instruction.list) {
           
         }
         
-        
         # plot the difference
         if(doDiffPlots) {
           # calculate optimal number of columns, based on having one more row than columns
@@ -518,10 +442,12 @@ for(this.benchmark in benchmark.instruction.list) {
           while(opt.ncols * (opt.ncols + 1) < length(local.Comparisons)) { opt.ncols <- opt.ncols +1 }
           
           # make and save
-          this.diff.plot <- plotSpatialComparison(local.Comparisons, 
-                                                  map.overlay = "world",
-                                                  text.multiplier = 2,
-                                                  ncol = opt.ncols)
+          this.diff.plot <- plotTemporalComparison(local.Comparisons, 
+                                                   text.multiplier = 2,
+                                                   ncol = opt.ncols,
+                                                   col.by = "Source",
+                                                   sizes = 2,
+                                                   title = paste0(local.Comparisons[[1]]@quant1@name, " Difference vs ", this.benchmark$name, " (", this.region$name, ")"))
           
           # add stats to plot
           if(length(this.benchmark$show.metrics) > 0) {
@@ -529,14 +455,30 @@ for(this.benchmark in benchmark.instruction.list) {
             selected.metrics.df <- metrics.df[which(metrics.df$Source %in% local.names), append("Source", this.benchmark$show.metrics)]
             # build a data.frame of the required stats
             metrics.label.df <- data.frame(stringsAsFactors = FALSE)
-            for(row.i in 1:nrow(selected.metrics.df))  metrics.label.df <- rbind(metrics.label.df,
-                                                                                 list("label" = paste(names(selected.metrics.df[row.i,this.benchmark$show.metrics]), round(selected.metrics.df[row.i,this.benchmark$show.metrics],3), sep = "=", collapse = "\n"), 
-                                                                                      Facet = paste(selected.metrics.df$Source[row.i], "-", this.Data.Field@source@name, sep = " "), 
-                                                                                      x = stats.xy["x"], 
-                                                                                      y = stats.xy["y"]),
-                                                                                 stringsAsFactors = FALSE)
+            
+            for(row.i in 1:nrow(selected.metrics.df)) {
+              
+              metrics.label.df <- rbind(metrics.label.df,
+                                        list("label" = paste(names(selected.metrics.df[row.i,this.benchmark$show.metrics]), round(selected.metrics.df[row.i,this.benchmark$show.metrics],3), sep = "=", collapse = "\n"), 
+                                             Layer = paste(selected.metrics.df$Source[row.i], "-", this.Data.Field@source@name, sep = " ")),
+                                        stringsAsFactors = FALSE)
+            }
             # add the stats to the plot
-            this.diff.plot  <- this.diff.plot  + geom_text(data = metrics.label.df,  mapping = aes(x = x, y = y, label = label))
+            
+            # x locations based on divided the year axis evenly
+            range.x.days <- ggplot_build(this.diff.plot)$layout$panel_scales_x[[1]]$range$range
+            n.stats <- length(local.Comparisons)
+            distance.between <- (range.x.days[2] - range.x.days[1])/(n.stats+1)
+            metrics.label.df$x <- as.Date(range.x.days[1] + (1:n.stats) * distance.between, origin = as.Date("1970-01-01"))
+            
+            # y location fixed at 15% up the plot area
+            range.y <- ggplot_build(this.diff.plot)$layout$panel_scales_y[[1]]$range$range
+            range.y <- c(min(-abs(range.y)), max(abs(range.y)))
+            this.y <- ((range.y[2] - range.y[1]) * 0.15) + range.y[1]
+            metrics.label.df$y <- this.y
+            
+            # add the text
+            this.diff.plot  <- this.diff.plot  + geom_text(data = metrics.label.df,  mapping = aes(x = x, y = y, label = label, col = Layer), size = theme_get()$text$size * text.size.scalar)
           }
           
           magicPlot(this.diff.plot, 
@@ -556,14 +498,14 @@ for(this.benchmark in benchmark.instruction.list) {
         this.values.plot <- plotTemporal(local.Fields, 
                                          text.multiplier = 2,
                                          ncol = 1,
-                                         col.by = "Source")
+                                         col.by = "Source", 
+                                         sizes = 2)
         
         if(length(this.benchmark$show.summary) > 0) {
           # extract labe
           labels.wanted <- which(field.names.vec %in% append(local.names, this.Data.Field@source@name))
           sum.labels.df <-  data.frame(label = sum.labels.vec[labels.wanted], 
-                                       Facet = field.names.vec[labels.wanted], 
-                                       x = summaries.xy["x"], y = summaries.xy["y"])
+                                       Layer = field.names.vec[labels.wanted])
           this.values.plot  <- this.values.plot  + geom_text(data = sum.labels.df,  mapping = aes(x = x, y = y, label = label))
         }
         
