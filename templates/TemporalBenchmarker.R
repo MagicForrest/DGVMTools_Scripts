@@ -63,64 +63,23 @@ regions <- list(
 # Define a list of benchmarks
 benchmark.instruction.list <- list(
   
-  GFED4_Annual = list("dataset" = "GFED4",
-                      "name" = "GFED4",
-                      "correct" = FALSE,
-                      "variable" = "burntfraction_std",
-                      "subannual.resolution" = "Year",
-                      "subannual.aggregate.method" = "sum",
-                      "spatial.aggregate.method" = "w.sum",
-                      "first.year" = 1996,
-                      "last.year" = 2013,
-                      "layer.name" = "Total",
-                      "unit" = "Mha",
+  GFED4_Annual = list(dataset = "GFED4",
+                      name = "GFED4",
+                      correct = FALSE,
+                      variable = "burntfraction_std",
+                      subannual.resolution = "Year",
+                      subannual.aggregate.method = "sum",
+                      spatial.aggregate.method = "w.sum",
+                      first.year = 1996,
+                      last.year = 2013,
+                      layer.name = "Total",
+                      unit = "Mha",
                       unit.conversion = 1/(10^10),
                       variable.name = "Burnt Area",
-                      "cuts" = c(0,0.002,0.005,0.01,0.02,0.05,0.10,0.2,0.50,1),
+                      cuts = c(0,0.002,0.005,0.01,0.02,0.05,0.10,0.2,0.50,1),
                       #"show.summary" = NULL,
                       show.metrics = c("NME", "NME_2", "r2", "m", "c"))
   
-  # "Simard2011" = list("dataset" = "Simard2011",
-  #                     "name" = "Simard et al. 2011",
-  #                     "correct" = FALSE,
-  #                     "variable" = "canopyheight_std",
-  #                     "layer.name" = "CanopyHeight",
-  #                     "unit" = "m"),
-  # 
-  # "Avitabile+Thurner_with_correction" = list("dataset" = "AvitabileThurner",
-  #                                            "name" = "Avitabile + Thurner",
-  #                                            "variable" = "vegC_std",
-  #                                            "correct" = TRUE,
-  #                                            "layer.name" = "Tree",
-  #                                            "unit" =  bquote("kgC" ~ m^{"-2"})),
-  # 
-  # "Avitabile+Thurner" = list("dataset" = "AvitabileThurner",
-  #                            "name" = "Avitabile + Thurner",
-  #                            "variable" = "vegC_std",
-  #                            "correct" = FALSE,
-  #                            "layer.name" = "Tree",
-  #                            "unit" =  bquote("kgC" ~ m^{"-2"})),
-  # 
-  # "MODISTreecover" = list("dataset" = "MOD44B.006",
-  #                         "name" = "MODIS MOD44B",
-  #                         "variable" = "vegcover_std",
-  #                         "correct" = FALSE,
-  #                         "layer.name" = "Tree",
-  #                         "unit" =  "%"),
-  # 
-  # "MODISTreecover_with_correction" = list("dataset" = "MOD44B.006",
-  #                                         "name" = "MODIS MOD44B",
-  #                                         "variable" = "vegcover_std",
-  #                                         "correct" = TRUE,
-  #                                         "layer.name" = "Tree",
-  #                                         "unit" =  "%"),
-  # 
-  # "Beer2010" = list("dataset" = "Beer2010",
-  #                   "name" = "Beer et al. 2010 GPP",
-  #                   "variable" = "aGPP_std",
-  #                   "correct" = FALSE,
-  #                   "layer.name" = "Total",
-  #                   "unit" = bquote("kgC" ~ m^{"-2"} ~ y^{"-1"})) 
   
 )
 
@@ -347,6 +306,7 @@ for(this.benchmark in benchmark.instruction.list) {
           this.diff.plot <- plotTemporalComparison(this.comparison,
                                                    text.multiplier = 2,
                                                    symmetric.scale = FALSE,
+                                                   plotTrend = FALSE,
                                                    sizes = 2)
           
           # add metric stats to plot
@@ -437,16 +397,13 @@ for(this.benchmark in benchmark.instruction.list) {
         
         # plot the difference
         if(doDiffPlots) {
-          # calculate optimal number of columns, based on having one more row than columns
-          opt.ncols  <- 1
-          while(opt.ncols * (opt.ncols + 1) < length(local.Comparisons)) { opt.ncols <- opt.ncols +1 }
-          
+            
           # make and save
           this.diff.plot <- plotTemporalComparison(local.Comparisons, 
                                                    text.multiplier = 2,
-                                                   ncol = opt.ncols,
                                                    col.by = "Source",
                                                    sizes = 2,
+                                                   plotTrend = FALSE,
                                                    title = paste0(local.Comparisons[[1]]@quant1@name, " Difference vs ", this.benchmark$name, " (", this.region$name, ")"))
           
           # add stats to plot
@@ -488,16 +445,8 @@ for(this.benchmark in benchmark.instruction.list) {
         }
         
         # plot the values
-        
-        # calculate optimal number of columns, based on having one more row than columns
-        opt.ncols  <- 1
-        while(opt.ncols * (opt.ncols + 1) < length(local.Comparisons)) {
-          opt.ncols <- opt.ncols +1
-        }
-        
         this.values.plot <- plotTemporal(local.Fields, 
                                          text.multiplier = 2,
-                                         ncol = 1,
                                          col.by = "Source", 
                                          sizes = 2)
         
