@@ -16,9 +16,12 @@ t1 <- Sys.time()
 ################ HERE SUPPLY VARIOUS RUN SETTINGS 
 
 # Analysis label and plot directory
-analysis.label <- "Example"
-plot.dir <- "/home/forrest/TestPlots"
+analysis.label <- "r8572"
+plot.dir <- "/home/matthew/Projects/FireMIP/plots/spatial/r8572"
 if(!file.exists(plot.dir)){dir.create(plot.dir)}
+
+DGVMData.dir <- "/home/matthew/DGVMData/"
+
 
 # save run-specific plots to run directory
 savePlotsToRunDir <- FALSE
@@ -45,69 +48,219 @@ doMultiPlots <- TRUE # make multipanel plots for the groups defined above (with 
 doDifferencePlots <- TRUE # do difference plots for run pairs (pairs defined above)
 
 # only for plots with multiple layers
-doLayerPlots <- TRUE # plot individual layers (usually) PFTs
-doAggregates <- TRUE # plot some aggregates 
+doLayerPlots <- FALSE # plot individual layers (usually) PFTs
+doAggregates <- FALSE # plot some aggregates 
 
 # only for monthly variables
-doMonthly <- TRUE 
-doSeasonal <- TRUE 
+doMonthly <- FALSE 
+doSeasonal <- FALSE 
 
 # if biome classification - maybe move this to another script
-doBiomes <- FALSE 
+doBiomes <- TRUE 
 
 
-###################################################################
-################ HERE DEFINE THE RUNS
 
-# wind limit (r8511)
-PNV_SPITFIRE_NoWindLimit <- defineSource(id = "PNV_SPITFIRE_NoWindLimit",
-                                         name = "SPITFIRE (PNV, No Wind Limit)",
-                                         dir = "/home/forrest/GuessRuns/FireMIP/PNV_SPITFIRE_NoWindLimit/",
-                                         format = GUESS, 
-                                         forcing.data = "CRUJRA")
+##### DEFINE THE RUNS #####
+
+# r8572
+Base <- defineSource(id = "Base",
+                     name = "Base",
+                     dir = "/spare/GuessRuns/r8572/Base",
+                     format = GUESS, 
+                     forcing.data = "CRUJRA")
+
+Daylength<- defineSource(id = "Daylength",
+                         name = "Daylength",
+                         dir = "/spare/GuessRuns/r8572/Daylength",
+                         format = GUESS, 
+                         forcing.data = "CRUJRA")
+
+NoWindLimit<- defineSource(id = "NoWindLimit",
+                           name = "NoWindLimit",
+                           dir = "/spare/GuessRuns/r8572/NoWindLimit",
+                           format = GUESS, 
+                           forcing.data = "CRUJRA")
+
+HumIgn1.0 <- defineSource(id = "HumIgn1.0",
+                          name = "HumIgn1.0",
+                          dir = "/spare/GuessRuns/r8572/HumIgn1.0",
+                          format = GUESS, 
+                          forcing.data = "CRUJRA")
+
+# r5874
+Base_r8574 <- defineSource(id = "Base_r8574",
+                           name = "Base (r8574)",
+                           dir = "/spare/GuessRuns/r8574/Base",
+                           format = GUESS, 
+                           forcing.data = "CRUJRA")
 
 
-PNV_SPITFIRE_LasslopWindLimit <- defineSource(id = "PNV_SPITFIRE_LasslopWindLimit",
-                                              name = "SPITFIRE (PNV, Lasslop Wind Limit)",
-                                              dir = "/home/forrest/GuessRuns/FireMIP/PNV_SPITFIRE_LasslopWindLimit/",
+# r5875
+HoffmanFBD <- defineSource(id = "HoffmanFBD",
+                           name = "Hoffman FBD",
+                           dir = "/spare/GuessRuns/r8575/HoffmanFBD",
+                           format = GUESS, 
+                           forcing.data = "CRUJRA")
+
+AllHoffmanFBD <- defineSource(id = "AllHoffmanFBD",
+                              name = "AllHoffman FBD",
+                              dir = "/spare/GuessRuns/r8575/AllHoffmanFBD",
+                              format = GUESS, 
+                              forcing.data = "CRUJRA")
+
+HoffmanFBD_Daylength <- defineSource(id = "HoffmanFBD_Daylength",
+                                     name = "Hoffman FBD, Daylength",
+                                     dir = "/spare/GuessRuns/r8575/HoffmanFBD_Daylength",
+                                     format = GUESS, 
+                                     forcing.data = "CRUJRA")
+
+AllHoffmanFBD_Daylength <- defineSource(id = "AllHoffmanFBD_Daylength",
+                                        name = "AllHoffman FBD, Daylength",
+                                        dir = "/spare/GuessRuns/r8575/AllHoffmanFBD_Daylength",
+                                        format = GUESS, 
+                                        forcing.data = "CRUJRA")
+
+
+# r8578
+HoffmanFBD_Daylength_Sigma <- defineSource(id = "HoffmanFBD_Daylength_Sigma",
+                                           name = "Hoffman FBD, Daylength, Sigma",
+                                           dir = "/spare/GuessRuns/r8578/HoffmanFBD_Daylength_Sigma",
+                                           format = GUESS, 
+                                           forcing.data = "CRUJRA")
+
+AllHoffmanFBD_Daylength_Sigma <- defineSource(id = "AllHoffmanFBD_Daylength_Sigma",
+                                              name = "AllHoffman FBD, Daylength, Sigma",
+                                              dir = "/spare/GuessRuns/r8578/AllHoffmanFBD_Daylength_Sigma",
                                               format = GUESS, 
                                               forcing.data = "CRUJRA")
 
+HoffmanFBD_Sigma <- defineSource(id = "HoffmanFBD_Sigma",
+                                 name = "Hoffman FBD, Sigma",
+                                 dir = "/spare/GuessRuns/r8578/HoffmanFBD_Sigma",
+                                 format = GUESS, 
+                                 forcing.data = "CRUJRA")
 
+AllHoffmanFBD_Sigma <- defineSource(id = "AllHoffmanFBD_Sigma",
+                                    name = "AllHoffman FBD, Sigma",
+                                    dir = "/spare/GuessRuns/r8578/AllHoffmanFBD_Sigma",
+                                    format = GUESS, 
+                                    forcing.data = "CRUJRA")
 
+AllHoffmanFBD_Sigma_NoSoilMoist <- defineSource(id = "AllHoffmanFBD_Sigma_NoSoilMoist",
+                                                name = "AllHoffman FBD, Sigma, NoSoilMoist",
+                                                dir = "/spare/GuessRuns/r8578/AllHoffmanFBD_Sigma_NoSoilMoist",
+                                                format = GUESS, 
+                                                forcing.data = "CRUJRA")
 
+AllHoffmanFBD_Sigma_VPD <- defineSource(id = "AllHoffmanFBD_Sigma_VPD",
+                                                name = "AllHoffman FBD, Sigma, VPD",
+                                                dir = "/spare/GuessRuns/r8578/AllHoffmanFBD_Sigma_VPD",
+                                                format = GUESS, 
+                                                forcing.data = "CRUJRA")
 
-#########################################################################################
-################ HERE SELECT WHICH RUNS SHOULD BE PLOTTED (INDIVIDUALLY)
-
+##### MAKE RUN LIST #####
 runs <- list(
   
-  PNV_SPITFIRE_NoWindLimit,
-  PNV_SPITFIRE_LasslopWindLimit
+  # Base,
+  # Daylength,
+  # NoWindLimit,
+  # HumIgn1.0,
+  #Base_r8574,
+  #HoffmanFBD,
+  #AllHoffmanFBD,
+  #HoffmanFBD_Sigma,
+  AllHoffmanFBD_Sigma,
+  # HoffmanFBD_Daylength,
+  # AllHoffmanFBD_Daylength,
+  # HoffmanFBD_Daylength_Sigma,
+  #AllHoffmanFBD_Daylength_Sigma
+  AllHoffmanFBD_Sigma_NoSoilMoist,
+  AllHoffmanFBD_Sigma_VPD
   
 )
 
-#########################################################################################
-################ HERE SELECT WHICH RUNS SHOULD BE PLOTTED TOGETHER AS A GROUP
+##### DEFINE PLOT GROUPS #####
+## Note that the runs must be included in th "runs" list above
+
+plot.groups <- list(
+  
+  # list(runs = list(Base,
+  #                  Daylength,
+  #                  NoWindLimit,
+  #                  HumIgn1.0,
+  
+)
+
+##### DEFINE PLOT GROUPS #####
+## Note that the runs must be included in th "runs" list above
 
 comparison.groups <- list(
   
-  list(runs = list(PNV_SPITFIRE_NoWindLimit,
-                   PNV_SPITFIRE_LasslopWindLimit),
-       name = "Wind Limits",
-       id = "WindLimit"
+  # list(runs = list(Base,
+  #                  Daylength,
+  #                  NoWindLimit,
+  #                  HumIgn1.0,
+  #                  Base_r8574),
+  #      name = "r8572",
+  #      id = "r8572"
+  # ),
+  # list(runs = list(Base_r8574,
+  #                  HoffmanFBD,
+  #                  AllHoffmanFBD),
+  #      name = "FBD",
+  #      id = "FBD"
+  # ),
+  #list(runs = list(Base_r8574,
+  #                 Daylength,
+  #                 HoffmanFBD,
+  #                 HoffmanFBD_Daylength,
+  #                 AllHoffmanFBD,
+  #                 AllHoffmanFBD_Daylength),
+  #     name = "FBD_Daylength",
+  #     id = "FBD_Daylength"
+  #)
+  # list(runs = list(#Base_r8574,
+  #   # Daylength,
+  #   HoffmanFBD,
+  #   HoffmanFBD_Sigma,
+  #   # HoffmanFBD_Daylength,
+  #   # HoffmanFBD_Daylength_Sigma,
+  #   AllHoffmanFBD,
+  #   AllHoffmanFBD_Sigma#,
+  #   # AllHoffmanFBD_Daylength,
+  #   # AllHoffmanFBD_Daylength_Sigma
+  # ),
+  # name = "Sigma2",
+  # id = "Sigma2"
+  # )
+  # list(runs = list(
+  #   AllHoffmanFBD_Sigma,
+  #   AllHoffmanFBD_Sigma_NoSoilMoist
+  # ),
+  # name = "No Soil Moisure",
+  # id = "NoSoilMoist",
+  list(runs = list(
+    AllHoffmanFBD_Sigma,
+    AllHoffmanFBD_Sigma_NoSoilMoist,
+    AllHoffmanFBD_Sigma_VPD
+  ),
+  name = "Alt. Fuel Moist.",
+  id = "VPD"
   )
-  
 )
 
 
-##########################################################################################################
-################ HERE SELECT PAIRS OF RUNS WHICH SHOULD BE COMPARED DIRECTLY AGAINST EACH OTHER  
+
+##### DEFINE RUN PAIRS #####
+## These runs will be compared directly against each otherS
 
 difference.pairs <- list(
-  list("base" =  PNV_SPITFIRE_NoWindLimit, "new" = PNV_SPITFIRE_LasslopWindLimit)
+  #list("base" = Base, "new" = Daylength),
+  # list("base" = Base, "new" = NoWindLimit),
+  #list("base" = Base, "new" = HumIgn1.0),
+  #list("base" = Base_r8574, "new" = HoffmanFBD),
+  #list("base" = Base_r8574, "new" = AllHoffmanFBD)
 )
-
 
 
 ##########################################################################################################
@@ -118,7 +271,7 @@ vars.to.plot <- list(
   
   #lai = list(var = "lai", cuts = seq(0, 10, 0.5), PFT = TRUE)#,
   #fpc = list(var = "fpc", cuts = seq(0, 1.3, 0.1), PFT = TRUE),
-  mfirefrac = list(var = "mfirefrac", cuts = c(0,0.002,0.005,0.01,0.02,0.05,0.10,0.2,0.50,1), PFT = FALSE)
+  #mfirefrac = list(var = "mfirefrac", cuts = c(0,0.002,0.005,0.01,0.02,0.05,0.10,0.2,0.50,1), PFT = FALSE)
   #tot_runof = list(var = "tot_runoff", cuts = seq(0,1000,50), PFT = FALSE)
   
 )
@@ -166,7 +319,7 @@ if(doBiomes) {
   
   biome.src <- defineSource(id = paste(biomes$dataset, resolution, sep = "."),
                             name = "PNV Vegetation Types", 
-                            dir = file.path("/home/forrest/DGVMData/HandP_PNV/HD"),
+                            dir = file.path(DGVMData.dir, "HandP_PNV/HD"),
                             format = DGVMData) 
   
   biome.data.field <- getField(source = biome.src, 
@@ -491,7 +644,7 @@ for(var.details in vars.to.plot) {
       new.field <- field.list[[new@id]]
       
       # make a directory for the comparison
-      local.comparison.dir <- file.path(plot.dir, "Comparisons", paste(new@id, base@id, sep ="-"))
+      local.comparison.dir <- file.path(plot.dir, "Differences", paste(new@id, base@id, sep ="-"))
       dir.create(local.comparison.dir, showWarnings = FALSE, recursive = TRUE)
       
       # make zero-layers for missing layers
@@ -510,7 +663,7 @@ for(var.details in vars.to.plot) {
       for(layer in names(new.field)){
         
         # make the comparison layer
-        this.comparison <- compareLayers(new.field, base.field, layers1 = layer, show.stats = FALSE)
+        this.comparison <- compareLayers(new.field, base.field, layers1 = layer, show.stats = FALSE, override.quantity = TRUE)
         
         # plot the difference
         nMonths <- 1
@@ -536,7 +689,7 @@ for(var.details in vars.to.plot) {
         if(isMonthly) {
           
           # make the annual comparison layer
-          this.comparison <- compareLayers(field.annual.list[[new@id]], field.annual.list[[base@id]], layers1 = layer, show.stats = FALSE)
+          this.comparison <- compareLayers(field.annual.list[[new@id]], field.annual.list[[base@id]], layers1 = layer, show.stats = FALSE, override.quantity = TRUE)
           
           # plot difference
           diff.layer.plot <- plotSpatialComparison(this.comparison, 
@@ -674,41 +827,14 @@ if(doBiomes) {
       run.plot.dir <- run@dir
     }
     
-    this.model.field <- getField(source = run, 
-                                 var = "lai",
-                                 first.year = first.year,
-                                 last.year = last.year,
-                                 year.aggregate.method = "mean",
-                                 read.full = reread,
-                                 write = TRUE,
-                                 verbose = TRUE)
-    
-    # combine shade intolerant PFT layers
-    layerOp(this.model.field, "+", c("BNE", "BINE"), "BNE")
-    layerOp(this.model.field, 0, "BINE")
-    
-    if("TeIBS" %in% names(this.model.field)) {
-      layerOp(this.model.field, "+", c("TeBS", "TeIBS"), "TeBS")
-      layerOp(this.model.field, 0, "TeIBS")
-    }
-    
-    if("IBS" %in% names(this.model.field)) {
-      layerOp(this.model.field, "+", c("TeBS", "IBS"), "TeBS")
-      layerOp(this.model.field, 0, "IBS")
-    }
-    
-    if("BIBS" %in% names(this.model.field)) {
-      layerOp(this.model.field, "+", c("BIBS", "BNE"), "BNE")
-      layerOp(this.model.field, 0, "BIBS")
-    }
     
     # calculate the biomes from the model output
-    model.biomes <- getScheme(source = run, scheme = biome.scheme, first.year = 1961, last.year = 1990, year.aggregate.method = "mean")
+    model.biomes <- getScheme(source = run, scheme = biome.scheme, first.year = 1961, last.year = 1990, year.aggregate.method = "mean", read.full = reread)
     biome.objects.list[[run@id]] <- model.biomes
     
     
     # comapare biomes
-    comparison.layer <- compareLayers(model.biomes, biome.data.field, layers1 = biome.scheme@id, tolerance = 0.1, show.stats = FALSE)
+    comparison.layer <- compareLayers(model.biomes, biome.data.field, layers1 = biome.scheme@id, tolerance = 0.1, show.stats = FALSE, override.quantity = TRUE)
     
     # plot without data
     biome.plot <- plotSpatial(model.biomes,
@@ -753,13 +879,15 @@ if(doBiomes) {
                                       layers = biome.scheme@id,
                                       map.overlay = map.overlay,
                                       text.multiplier = 2,
-                                      title = NULL)
-      #p <- p + facet_wrap(~Facet, nrow = 4)
+                                      title = NULL,
+                                      ncol = nOptCols(x = length(local.biomes.list), rows.more.than.cols = 2))
+
       biome.group.plot <- biome.group.plot + theme(legend.position='bottom')
       biome.group.plot <- biome.group.plot + theme(legend.title=element_blank())
       biome.group.plot <- biome.group.plot + guides(fill=guide_legend(ncol=2))
       
       magicPlot(biome.group.plot, 
+                height = 1100,
                 filename = file.path(local.group.dir, paste(biome.scheme@id, group$id, analysis.label, paste0(first.year, "-", last.year), sep = ".")))
       
       print(paste0("*** Done biome group: ", group$id))
@@ -802,7 +930,6 @@ if(doBiomes) {
                                                  type = "values",
                                                  map.overlay = "world",
                                                  text.multiplier = 2)
-      if(length(local.field.list) > 1) biome.values.plot <- biome.values.plot + facet_wrap(~Facet, nrow = 2)
       magicPlot(biome.values.plot, 
                 filename = file.path(local.comparison.dir, paste(biome.scheme@id, "2-up", analysis.label, paste0(first.year, "-", last.year), sep = ".")))
       
