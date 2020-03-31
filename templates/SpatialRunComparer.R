@@ -55,7 +55,7 @@ doSeasonal <- TRUE
 
 ##### DEFINE THE RUNS #####
 ## But not that these runs won't be read or plotted if the are not includes in "runs",
-## "plot.groups" or "difference.pairs"
+## "run.groups" or "run.pairs"
 
 # wind limit (r8511)
 PNV_SPITFIRE_NoWindLimit <- defineSource(id = "PNV_SPITFIRE_NoWindLimit",
@@ -86,7 +86,7 @@ runs <- list(
 
 ###### DEFINE GROUPS #####
 
-plot.groups <- list(
+run.groups <- list(
   
   list(runs = list(PNV_SPITFIRE_NoWindLimit,
                    PNV_SPITFIRE_LasslopWindLimit),
@@ -100,7 +100,7 @@ plot.groups <- list(
 ##### DEFINE RUN PAIRS #####
 ## These runs will be compared directly against each otherS
 
-difference.pairs <- list(
+run.pairs <- list(
   list("base" =  PNV_SPITFIRE_NoWindLimit, "new" = PNV_SPITFIRE_LasslopWindLimit)
 )
 
@@ -322,7 +322,7 @@ for(var.details in vars.to.plot) {
   if(doMultiPlots) {
     
     ### do each comparison group in turn
-    for(group in plot.groups) {
+    for(group in run.groups) {
       
       # make a directory for the comparison groups
       local.group.dir <- file.path(plot.dir, "Groups", group$id)
@@ -450,7 +450,7 @@ for(var.details in vars.to.plot) {
   
   if(doDifferencePlots) {
     
-    for(this.pair in difference.pairs) {
+    for(this.pair in run.pairs) {
       
       base <- this.pair$base
       new <- this.pair$new
@@ -458,7 +458,7 @@ for(var.details in vars.to.plot) {
       new.field <- field.list[[new@id]]
       
       # make a directory for the comparison
-      local.comparison.dir <- file.path(plot.dir, "Differences", paste(new@id, base@id, sep ="-"))
+      local.comparison.dir <- file.path(plot.dir, "Pairs", paste(new@id, base@id, sep ="-"))
       dir.create(local.comparison.dir, showWarnings = FALSE, recursive = TRUE)
       
       # make zero-layers for missing layers

@@ -53,7 +53,7 @@ source.cols <- c()
 
 
 #### SEASONAL CYCLE PLOTS ####
-cat("Seasonal cycle plots: \n")
+cat("Seasonal Cycle plots: \n")
 for(this.var in seasonal.vars) {
   
   cat(paste0("   * ", this.var, " \n"))
@@ -124,7 +124,7 @@ for(this.var in seasonal.vars) {
 
 
 #### FULL TIME SERIES PLOTS ####
-cat("Annual TS plots: \n")
+cat("Time Series plots: \n")
 for(this.var in annual.vars) {
   cat(paste0("   * ", this.var, " \n"))
   

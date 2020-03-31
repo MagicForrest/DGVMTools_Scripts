@@ -224,7 +224,7 @@ runs <- list(
 ##### DEFINE PLOT GROUPS #####
 ## Note that the runs must be included in th "runs" list above
 
-plot.groups <- list(
+run.groups <- list(
   
   # list(runs = list(PNV_SPITFIRE,
   #                  PNV_SPITFIRE_8hr,
@@ -440,7 +440,7 @@ for(this.benchmark in benchmark.instruction.list) {
   if(doMultiPlots) {
     
     ### do each comparison group in turn
-    for(group in plot.groups) {
+    for(group in run.groups) {
       
       # make a directory for the comparison
       local.group.dir <- file.path(plot.dir, "Groups", group$id)

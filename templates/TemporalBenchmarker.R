@@ -133,7 +133,7 @@ runs <- list(
 ## Note the runs must be included in the "runs" list above
 
 
-plot.groups <- list(
+run.groups <- list(
   
   list(runs = list(PNV_SPITFIRE_NoWindLimit,
                    PNV_SPITFIRE_LasslopWindLimit,
@@ -376,7 +376,7 @@ for(this.benchmark in benchmark.instruction.list) {
     if(doMultiPlots) {
       
       ### do each comparison group in turn
-      for(group in plot.groups) {
+      for(group in run.groups) {
         
         # make a directory for the comparison
         local.group.dir <- file.path(plot.dir, "Groups", group$id)
